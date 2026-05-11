@@ -4,7 +4,7 @@ from langchain.memory import ConversationBufferMemory
 from langchain_core.prompts import PromptTemplate
 from langchain_groq import ChatGroq
 class AI:
-    def __init__(self):
+    def __init__(self,key):
         template = """
 You are a black pepper expert chatbot.
 
@@ -14,7 +14,7 @@ Current conversation:
 Human: {input}
 AI:
 """
-        key =  "API_KEY"
+        key =  key
         llm = ChatGroq(model="llama-3.1-8b-instant",api_key=key)
         prompt = PromptTemplate(input_variables=["history", "input"],template=template)  
         self.conversationChain = ConversationChain(
@@ -30,7 +30,11 @@ AI:
 
 st.title("Black pepper info chat bot")
 st.write("Hello! I am your black pepper expert. Ask me anything about black pepper. Type 'exit' to end the conversation.")
+key = st.text_input("Enter API key", type="password")
 
+if not key:
+    st.warning("Please enter your Groq API key to start using the chatbot.")
+    st.stop()
 topics = [
     "Black pepper cultivation and plantation management",
     "Pest and disease management",
@@ -43,7 +47,7 @@ topics = [
     "Supply chain and procurement strategy",
     "Farm economics and operational planning",
 ]
-ai = AI()
+ai = AI(key)
 for topic in topics:
    clicked =  st.button(topic)
    if clicked:
